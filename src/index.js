@@ -58,6 +58,7 @@ bot.command('pages', (ctx) => {
 bot.on('message', async (ctx) => {
     const text = ctx.text;
     const chatId = ctx.chat.id;
+    const whoIsIt = ctx.from.first_name;
     try {
         if( text === 'Lash квесты') {
             const photoPath = path.resolve(__dirname, '../assets/img/tasks.jpeg');
@@ -68,9 +69,11 @@ bot.on('message', async (ctx) => {
                 },
                 {
                     caption: 'Уважаемые клиенты!🩵\n' +
+                        '\n' +
                         'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
-                        'AURA LASH | #INFO |' +
-                        '#ВажнаяИнформация;',
+                        'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
+                        '\n' +
+                        'AURA LASH | #INFO |#ВажнаяИнформация',
                     reply_markup: keyboards.tasksOptions.reply_markup
                 })
         }
@@ -78,7 +81,7 @@ bot.on('message', async (ctx) => {
             // Получаем путь к текущему файлу и к каталогу
             const photoPath = path.resolve(__dirname, '../assets/img/support.jpeg');
             locationUserInMenu = 'Поддержка';
-
+            console.log(whoIsIt)
             return ctx.replyWithPhoto(
                 {
                     source: photoPath
@@ -144,7 +147,7 @@ bot.on('message', async (ctx) => {
             //         await ctx.reply('Вы вернулись в главное меню', keyboards.mainOptions);
             //     }
             // }
-            await ctx.reply('Я тебя не понял.')
+            //await ctx.reply('Я тебя не понял.')
         }
     }
     catch (error) {
@@ -204,6 +207,16 @@ function getPageContent(page, itemsPerPage = 3) {
         keyboard,
     };
 }
+
+bot.action('about_quests', async (ctx) => {
+    const chatId = ctx.chat.id;
+    await ctx.reply('Вы вошли в раздел о кветах', keyboards.backOptions);
+})
+
+bot.action('current_quests', async (ctx) => {
+    const chatId = ctx.chat.id;
+    await ctx.reply('Тут чуть-чуть погодя ты сможешь увидеть актуальные квесты', keyboards.backOptions);
+})
 
 bot.action('next_page', (ctx) => {
     const chatId = ctx.chat.id;

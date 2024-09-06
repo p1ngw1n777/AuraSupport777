@@ -3,9 +3,7 @@ export const keyboards = {
     tasksOptions: {
         reply_markup: {
             inline_keyboard: [
-                [{text: 'Квест 1', callback_data: 'task' }, {text: 'Квест 2', callback_data: 'task' }],
-                [{text:  'Квест 3', callback_data: 'task'}],
-                [{text: 'Назад', callback_data: 'Назад'}],
+                [{text: 'Начать выполнять квесты 💌', url: 'https://t.me/auraquest' }],
             ],
             resize_keyboard: true,
             one_time_keyboard: true,
