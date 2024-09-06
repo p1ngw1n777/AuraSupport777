@@ -7,7 +7,6 @@ import * as path from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const menuItems = [ 'Lash квесты', 'О бренде', 'Поддержка', 'Опт и представительство' ]
 
 const bot = new Telegraf(configuration.telegramToken, {});
 console.log('bot listing');
@@ -42,7 +41,7 @@ bot.start(async (ctx) => {
 bot.help(async (ctx) => await ctx.reply('Вот список доступных команд:\n/start - Начать \n/help - Помощь\n/menu - Выход в главное меню'));
 
 let idMessage;
-bot.command('abrakadabra', (ctx) => ctx.reply('Тыкнул в команду1'))
+
 bot.command('menu', async (ctx) => {
     idMessage = await ctx.reply('Вы вышли в главное меню', keyboards.mainOptions);
 })
@@ -97,6 +96,9 @@ bot.on('message', async (ctx) => {
             ).catch((error) => {
                 console.error('Ошибка: ', error)
             })
+        }
+        else if (text === 'AURA LASH CLUB'){
+            await ctx.reply('Перейти в чат AURA LASH CLUB', keyboards.chatOptions.reply_markup)
         }
         else if (text === 'группа'){
             await sendMessageToGroup(chatId, 'Тест успешен');
@@ -216,6 +218,50 @@ bot.action('about_quests', async (ctx) => {
 bot.action('current_quests', async (ctx) => {
     const chatId = ctx.chat.id;
     await ctx.reply('Тут чуть-чуть погодя ты сможешь увидеть актуальные квесты', keyboards.backOptions);
+})
+
+bot.action('support', async (ctx) => {
+    const photoPath = path.resolve(__dirname, '../assets/img/support.jpeg');
+    locationUserInMenu = 'Поддержка';
+    await ctx.replyWithPhoto(
+        {
+            source: photoPath
+        },
+        {
+            caption: 'Уважаемые клиенты!🩵\n' +
+                '\n' +
+                'Чтобы связаться с службой заботы AURA LASH, нажмите на кнопку ниже!👇🏻 \n' +
+                '\n' +
+                'AURA LASH | #INFO | #ВажнаяИнформация',
+            reply_markup: keyboards.supportOptions
+        }
+    ).catch((error) => {
+        console.error('Ошибка: ', error)
+    })
+})
+
+bot.action('lash_quest',  async (ctx) => {
+    const photoPath = path.resolve(__dirname, '../assets/img/tasks.jpeg');
+    locationUserInMenu = 'Lash квесты';
+    await ctx.replyWithPhoto(
+        {
+            source: photoPath
+        },
+        {
+            caption: 'Уважаемые клиенты!🩵\n' +
+                '\n' +
+                'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
+                'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
+                '\n' +
+                'AURA LASH | #INFO |#ВажнаяИнформация',
+            reply_markup: keyboards.tasksOptions.reply_markup
+        }).catch((error) => {
+            console.error('Ошибка: ', error)
+        })
+})
+
+bot.action('chatAura', async (ctx) => {
+    await ctx.reply('Перейти в чат AURA LASH CLUB', keyboards.chatOptions.reply_markup)
 })
 
 bot.action('next_page', (ctx) => {

@@ -9,26 +9,29 @@ export const keyboards = {
             one_time_keyboard: true,
         }
     },
-    //lol
-
+    chatOptions: {
+        reply_markup: { 
+            reply_markup: {
+                inline_keyboard: [
+                    [{text: 'Чат AURA LASH CLUB', url: 'https://t.me/auralashru' }],
+                ],
+                resize_keyboard: true,
+                one_time_keyboard: true,
+        }
+    }
+    },
     mainOptions: {
         reply_markup: {
-            keyboard: [
-                [{ text: 'Lash квесты' }, { text: 'Поддержка' } ],
-                [{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
+            inline_keyboard: [
+                [{ text: 'Lash квесты' , callback_data: 'lash_quest'}, { text: 'Поддержка', callback_data: 'support'} ],
+                [ {text: 'AURA LASH CLUB', callback_data: 'chatAura'} ],
+                //[{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
             ],
             resize_keyboard: true,
             one_time_keyboard: true,
         }
     },
     brandOptions: {
-        // inline_keyboard: [
-        //     [
-        //         {
-        //             text: 'Перейти на сайт', callback_data: 'Перейти на сайт', url: 'https://dominilash.ru'
-        //         }
-        //     ]
-        // ],
         inline_keyboard: [
             [{text: 'Ресницы', callback_data: 'test'}, {text: 'Клей', callback_data: 'test'}, {text: 'Препараты', callback_data: 'test'}],
             [{text: 'Перейти на сайт', url: 'https://dominilash.ru'}],
