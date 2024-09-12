@@ -6,6 +6,8 @@ import { dirname } from 'path';
 import * as path from "node:path";
 import pkg from 'telegraf-session-local';
 import { captions } from './captions.js';
+import { sendInfoAboutProducts } from './actions.js';
+import { sections } from './sections.js';
 const LocalSession = pkg; // Поддержка для импорта CommonJS модуля
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,21 +21,6 @@ bot.telegram.setMyDescription(captions.description)
 
 let chatIdFromUser = null;
 let locationUserInMenu;
-const sections = {
-    section1: [
-        path.resolve(__dirname, '../assets/img/lashes/lashes1.jpeg'),
-        path.resolve(__dirname, '../assets/img/lashes/lashes2.jpeg'),
-        path.resolve(__dirname, '../assets/img/lashes/lashes3.jpeg'),
-        path.resolve(__dirname, '../assets/img/lashes/lashes4.jpeg'),
-        path.resolve(__dirname, '../assets/img/lashes/lashes5.jpeg'),
-        path.resolve(__dirname, '../assets/img/lashes/lashes6.jpeg'),
-    ],
-    section2: [
-        path.resolve(__dirname, '../assets/img/glues/allGlues.jpeg'),
-        path.resolve(__dirname, '../assets/img/glues/glueA.jpeg'),
-        path.resolve(__dirname, '../assets/img/glues/glueU.jpeg'),
-    ]
-};
 
 bot.telegram.setMyCommands([
     {
@@ -281,20 +268,7 @@ bot.action('back', async (ctx) => {
 
 bot.action('lashes', async (ctx) => {
     try {
-        await ctx.deleteMessage(ctx.session.messageId);
-        ctx.session.photoIndex = 0;
-        ctx.session.section = 'section1';
-        const section = ctx.session.section;
-        const caption = captions[section];
-        const sentMessage = await ctx.replyWithPhoto(
-            { source: sections[ctx.session.section][ctx.session.photoIndex]} ,
-            { 
-                caption: caption,
-                reply_markup: getNavigationButtons(ctx.session.photoIndex, sections[ctx.session.section].length)
-            }
-        );
-        ctx.session.messageId = sentMessage.message_id;
-        console.log('ID сообщения', ctx.session.messageId)
+        await sendInfoAboutProducts(ctx, 'section1')
     }
     catch (error){
         console.error('ОшибОЧКА: ', error)
@@ -303,20 +277,16 @@ bot.action('lashes', async (ctx) => {
 
 bot.action('glue', async (ctx) => {
     try {
-        await ctx.deleteMessage(ctx.session.messageId);
-        ctx.session.photoIndex = 0;
-        ctx.session.section = 'section2';
-        const section = ctx.session.section;
-        const caption = captions[section];
-        const sentMessage = await ctx.replyWithPhoto(
-            { source: sections[ctx.session.section][ctx.session.photoIndex]} ,
-            { 
-                caption: caption,
-                reply_markup: getNavigationButtons(ctx.session.photoIndex, sections[ctx.session.section].length)
-            }
-        );
-        ctx.session.messageId = sentMessage.message_id;
-        console.log('ID сообщения', ctx.session.messageId)
+        await sendInfoAboutProducts(ctx, 'section2')
+    }
+    catch (error){
+        console.error('ОшибОЧКА: ', error)
+    }
+})
+
+bot.action('preparations', async (ctx) => {
+    try {
+        await sendInfoAboutProducts(ctx, 'section3')
     }
     catch (error){
         console.error('ОшибОЧКА: ', error)

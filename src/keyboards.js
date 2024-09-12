@@ -81,7 +81,7 @@ export const keyboards = {
     },
     brandOptions: {
         inline_keyboard: [
-            [{text: 'Ресницы', callback_data: 'lashes'}, {text: 'Клей', callback_data: 'glue'}, {text: 'Препараты', callback_data: 'test'}],
+            [{text: 'Ресницы', callback_data: 'lashes'}, {text: 'Клей', callback_data: 'glue'}, {text: 'Препараты', callback_data: 'preparations'}],
             [{text: 'Перейти на сайт', url: 'https://dominilash.ru'}],
             [{text:  'Назад', callback_data: 'back'}]
         ],
