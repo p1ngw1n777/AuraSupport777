@@ -4,12 +4,15 @@ import  { keyboards } from './keyboards.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import * as path from "node:path";
+import pkg from 'telegraf-session-local';
+const LocalSession = pkg; // Поддержка для импорта CommonJS модуля
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const bot = new Telegraf(configuration.telegramToken, {});
 console.log('bot listing');
+bot.use(new LocalSession({ database: 'session_db.json' }).middleware());
 
 bot.telegram.setMyDescription('Добро пожаловать в бота Aura!\n' +
     'Тут ты сможешь познакомиться с брендом Aura.\n' +
@@ -35,7 +38,9 @@ bot.telegram.setMyCommands([
 bot.start(async (ctx) => {
     chatIdFromUser = ctx.message.chat.id;
     console.log(`chat_id: ${chatIdFromUser}`);
-    await ctx.reply('Привет! Выберите одну из кнопок ниже:', keyboards.mainOptions);
+    const sentMessage = await ctx.reply('Привет! Выберите одну из кнопок ниже:', keyboards.mainOptions);
+    ctx.session.messageId = sentMessage.message_id;
+    console.log('ID сообщения', ctx.session.messageId)
 });
 
 bot.help(async (ctx) => await ctx.reply('Вот список доступных команд:\n/start - Начать \n/help - Помощь\n/menu - Выход в главное меню'));
@@ -104,11 +109,8 @@ bot.on('message', async (ctx) => {
             await sendMessageToGroup(chatId, 'Тест успешен');
         }
         else if(text === 'О бренде') {
-            // Получаем путь к текущему файлу и к каталогу
             const photoPath = path.resolve(__dirname, '../assets/img/brand.jpeg');
             locationUserInMenu = 'О бренде';
-
-            //ofm
             return ctx.replyWithPhoto(
                 {
                     source: photoPath
@@ -223,45 +225,87 @@ bot.action('current_quests', async (ctx) => {
 bot.action('support', async (ctx) => {
     const photoPath = path.resolve(__dirname, '../assets/img/support.jpeg');
     locationUserInMenu = 'Поддержка';
-    await ctx.replyWithPhoto(
-        {
-            source: photoPath
-        },
-        {
-            caption: 'Уважаемые клиенты!🩵\n' +
-                '\n' +
-                'Чтобы связаться с службой заботы AURA LASH, нажмите на кнопку ниже!👇🏻 \n' +
-                '\n' +
-                'AURA LASH | #INFO | #ВажнаяИнформация',
-            reply_markup: keyboards.supportOptions
-        }
-    ).catch((error) => {
+    try {
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.replyWithPhoto(
+            {
+                source: photoPath
+            },
+            {
+                caption: 'Уважаемые клиенты!🩵\n' +
+                    '\n' +
+                    'Чтобы связаться с службой заботы AURA LASH, нажмите на кнопку ниже!👇🏻 \n' +
+                    '\n' +
+                    'AURA LASH | #INFO | #ВажнаяИнформация',
+                reply_markup: keyboards.supportOptions
+            }
+        ).catch((error) => {
+            console.error('Ошибка: ', error)
+        })
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения', ctx.session.messageId)
+    }
+    catch (error){
         console.error('Ошибка: ', error)
-    })
+    }
 })
 
 bot.action('lash_quest',  async (ctx) => {
     const photoPath = path.resolve(__dirname, '../assets/img/tasks.jpeg');
     locationUserInMenu = 'Lash квесты';
-    await ctx.replyWithPhoto(
-        {
-            source: photoPath
-        },
-        {
-            caption: 'Уважаемые клиенты!🩵\n' +
-                '\n' +
-                'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
-                'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
-                '\n' +
-                'AURA LASH | #INFO |#ВажнаяИнформация',
-            reply_markup: keyboards.tasksOptions.reply_markup
-        }).catch((error) => {
-            console.error('Ошибка: ', error)
-        })
+    try {     
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.replyWithPhoto(
+            {
+                source: photoPath
+            },
+            {
+                caption: 'Уважаемые клиенты!🩵\n' +
+                    '\n' +
+                    'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
+                    'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
+                    '\n' +
+                    'AURA LASH | #INFO |#ВажнаяИнформация',
+                reply_markup: keyboards.tasksOptions.reply_markup
+            }).catch((error) => {
+                console.error('Ошибка: ', error)
+            })
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
+        // await ctx.editMessageMedia(
+        //     {
+        //         type: 'photo',
+        //         media: {
+        //             source: photoPath  // Замените на путь к вашей фотографии
+        //         },
+        //         caption: 'Уважаемые клиенты!🩵\n' +
+        //             '\n' +
+        //             'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
+        //             'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
+        //             '\n' +
+        //             'AURA LASH | #INFO |#ВажнаяИнформация',
+        //         reply_markup: keyboards.tasksOptions.reply_markup
+        //     }, {
+        //         chat_id: ctx.chat.id,
+        //         message_id: ctx.session.messageId
+        //     }
+        // )
+    }
+    catch (error){
+        console.error('Ошибочка: ', error)
+    }
 })
 
 bot.action('chatAura', async (ctx) => {
-    await ctx.reply('Перейти в чат AURA LASH CLUB', keyboards.chatOptions.reply_markup)
+    try {
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.reply('Перейти в чат AURA LASH CLUB', keyboards.chatOptions.reply_markup);
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
+    }
+    catch (error){
+        console.error('Ошибка: ', error)
+    }
 })
 
 bot.action('next_page', (ctx) => {
@@ -274,13 +318,17 @@ bot.action('next_page', (ctx) => {
     ctx.editMessageText(text, keyboard);
 });
 
+bot.action('back', async (ctx) => {
+    await ctx.deleteMessage(ctx.session.messageId);
+    const sentMessage = await ctx.reply('Вы вышли в главное меню', keyboards.mainOptions)
+    ctx.session.messageId = sentMessage.message_id;
+    console.log('ID сообщения', ctx.session.messageId)
+})
+
 bot.action('test', async (ctx) => {
     await ctx.reply('В разработке', keyboards.mainOptions);
 })
 
-bot.action('Назад', async(ctx) => {
-    await ctx.reply('Ты вышел в главное меню', keyboards.mainOptions)
-    })
 bot.action('task', async(ctx) => {
     await ctx.reply('Ты выбрал квест, но они ещё в разработке', keyboards.mainOptions)
 })

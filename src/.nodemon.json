@@ -1,0 +1,7 @@
+{
+    "watch": ["index", "src"],      
+    "ext": "js,json",
+    "ignore": ["node_modules", "session_db.json", "*.test.js", "logs/*"], 
+    "exec": "node index.js"         
+  }
+  

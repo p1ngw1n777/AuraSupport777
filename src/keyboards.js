@@ -3,7 +3,8 @@ export const keyboards = {
     tasksOptions: {
         reply_markup: {
             inline_keyboard: [
-                [{text: 'Начать выполнять квесты 💌', url: 'https://t.me/auraquest' }],
+                [{ text: 'Начать выполнять квесты 💌', url: 'https://t.me/auraquest' }],
+                [{ text: 'Назад', callback_data: 'back'}]
             ],
             resize_keyboard: true,
             one_time_keyboard: true,
@@ -14,6 +15,7 @@ export const keyboards = {
             reply_markup: {
                 inline_keyboard: [
                     [{text: 'Чат AURA LASH CLUB', url: 'https://t.me/auralashru' }],
+                    [{ text: 'Назад', callback_data: 'back'}]
                 ],
                 resize_keyboard: true,
                 one_time_keyboard: true,
@@ -58,6 +60,7 @@ export const keyboards = {
                     url: 'https://t.me/aurahelp'
                 }
             ],
+            [{ text: 'Назад', callback_data: 'back'}]
         ]
     },
     backOptions: JSON.stringify({
