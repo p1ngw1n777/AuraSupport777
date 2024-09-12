@@ -1,10 +1,11 @@
 import { Markup, Telegraf } from 'telegraf';
 import { configuration }  from './config.js';
-import  { keyboards } from './keyboards.js'
+import  { keyboards, getNavigationButtons } from './keyboards.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import * as path from "node:path";
 import pkg from 'telegraf-session-local';
+import { captions } from './captions.js';
 const LocalSession = pkg; // Поддержка для импорта CommonJS модуля
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,12 +15,18 @@ const bot = new Telegraf(configuration.telegramToken, {});
 console.log('bot listing');
 bot.use(new LocalSession({ database: 'session_db.json' }).middleware());
 
-bot.telegram.setMyDescription('Добро пожаловать в бота Aura!\n' +
-    'Тут ты сможешь познакомиться с брендом Aura.\n' +
-    'Узнать условия для представителей и посмотреть ассортимент.')
+bot.telegram.setMyDescription(captions.description)
 
 let chatIdFromUser = null;
 let locationUserInMenu;
+const photos = [
+    path.resolve(__dirname, '../assets/img/lashes/lashes1.jpeg'),
+    path.resolve(__dirname, '../assets/img/lashes/lashes2.jpeg'),
+    path.resolve(__dirname, '../assets/img/lashes/lashes3.jpeg'),
+    path.resolve(__dirname, '../assets/img/lashes/lashes4.jpeg'),
+    path.resolve(__dirname, '../assets/img/lashes/lashes5.jpeg'),
+    path.resolve(__dirname, '../assets/img/lashes/lashes6.jpeg'),
+];
 
 bot.telegram.setMyCommands([
     {
@@ -143,26 +150,13 @@ bot.on('message', async (ctx) => {
         else if(text === 'Назад'){
             await ctx.reply('Ты вышел в главное меню', keyboards.mainOptions)
         }
-        else {
-            // let checkUp = await checkOnItemMenu(locationUserInMenu, menuItems);
-            // console.log(checkUp)
-            // if (checkUp){
-            //     if(text === 'Назад'){
-            //         await ctx.reply('Вы вернулись в главное меню', keyboards.mainOptions);
-            //     }
-            // }
-            //await ctx.reply('Я тебя не понял.')
-        }
+        else { }
     }
     catch (error) {
         console.error(error);
     }
 });
 
-async function checkOnItemMenu (text, menuItems) {
-    console.log(text);
-    return menuItems.includes(text);
-}
 
 bot.hears('Опт и представительство', (ctx) => ctx.reply('Вы вошли в раздел Опт и представительство'));
 
@@ -175,51 +169,26 @@ async function sendMessageToGroup(chatId, message) {
 }
 
 
-
-const items = [
-    'Элемент 1',
-    'Элемент 2',
-    'Элемент 3',
-    'Элемент 4',
-    'Элемент 5',
-    'Элемент 6',
-    'Элемент 7',
-    'Элемент 8',
-    'Элемент 9',
-    'Элемент 10',
-];
-
-const userPages = {};
-
-function getPageContent(page, itemsPerPage = 3) {
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-    const start = page * itemsPerPage;
-    const end = start + itemsPerPage;
-    const pageItems = items.slice(start, end).join('\n');
-
-    const prevButton = page > 0 ? Markup.button.callback('⬅️ Назад', 'prev_page') : null;
-    const nextButton = page < totalPages - 1 ? Markup.button.callback('Вперед ➡️', 'next_page') : null;
-
-    const buttons = [];
-    if (prevButton) buttons.push(prevButton);
-    if (nextButton) buttons.push(nextButton);
-
-    const keyboard = Markup.inlineKeyboard([buttons]);
-
-    return {
-        text: `Страница ${page + 1} из ${totalPages}\n\n${pageItems}`,
-        keyboard,
-    };
-}
-
-bot.action('about_quests', async (ctx) => {
+bot.action('brand', async (ctx) => {
+    const photoPath = path.resolve(__dirname, '../assets/img/brand.jpeg');
     const chatId = ctx.chat.id;
-    await ctx.reply('Вы вошли в раздел о кветах', keyboards.backOptions);
-})
-
-bot.action('current_quests', async (ctx) => {
-    const chatId = ctx.chat.id;
-    await ctx.reply('Тут чуть-чуть погодя ты сможешь увидеть актуальные квесты', keyboards.backOptions);
+    try {
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.replyWithPhoto(
+            {
+                source: photoPath
+            },
+            {
+                caption: captions.brand,
+                reply_markup: keyboards.brandOptions
+            }
+        )
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения', ctx.session.messageId)
+    }
+    catch(error){
+        console.error('Ошибка: ', error)
+    }
 })
 
 bot.action('support', async (ctx) => {
@@ -232,11 +201,7 @@ bot.action('support', async (ctx) => {
                 source: photoPath
             },
             {
-                caption: 'Уважаемые клиенты!🩵\n' +
-                    '\n' +
-                    'Чтобы связаться с службой заботы AURA LASH, нажмите на кнопку ниже!👇🏻 \n' +
-                    '\n' +
-                    'AURA LASH | #INFO | #ВажнаяИнформация',
+                caption: captions.support,
                 reply_markup: keyboards.supportOptions
             }
         ).catch((error) => {
@@ -260,36 +225,13 @@ bot.action('lash_quest',  async (ctx) => {
                 source: photoPath
             },
             {
-                caption: 'Уважаемые клиенты!🩵\n' +
-                    '\n' +
-                    'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
-                    'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
-                    '\n' +
-                    'AURA LASH | #INFO |#ВажнаяИнформация',
+                caption: captions.lash_quest,
                 reply_markup: keyboards.tasksOptions.reply_markup
             }).catch((error) => {
                 console.error('Ошибка: ', error)
             })
         ctx.session.messageId = sentMessage.message_id;
         console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
-        // await ctx.editMessageMedia(
-        //     {
-        //         type: 'photo',
-        //         media: {
-        //             source: photoPath  // Замените на путь к вашей фотографии
-        //         },
-        //         caption: 'Уважаемые клиенты!🩵\n' +
-        //             '\n' +
-        //             'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
-        //             'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
-        //             '\n' +
-        //             'AURA LASH | #INFO |#ВажнаяИнформация',
-        //         reply_markup: keyboards.tasksOptions.reply_markup
-        //     }, {
-        //         chat_id: ctx.chat.id,
-        //         message_id: ctx.session.messageId
-        //     }
-        // )
     }
     catch (error){
         console.error('Ошибочка: ', error)
@@ -319,21 +261,81 @@ bot.action('next_page', (ctx) => {
 });
 
 bot.action('back', async (ctx) => {
-    await ctx.deleteMessage(ctx.session.messageId);
-    const sentMessage = await ctx.reply('Вы вышли в главное меню', keyboards.mainOptions)
-    ctx.session.messageId = sentMessage.message_id;
-    console.log('ID сообщения', ctx.session.messageId)
+    try {
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.reply('Вы вышли в главное меню', keyboards.mainOptions)
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения', ctx.session.messageId)
+    }
+    catch (error){
+        console.error('Ошибка: ', error)
+    }
 })
 
+bot.action('lashes', async (ctx) => {
+    try {
+        await ctx.deleteMessage(ctx.session.messageId);
+        ctx.session.photoIndex = 0;
+        console.log(keyboards.navigationOptions)
+        const sentMessage = await ctx.replyWithPhoto(
+            { source: photos[ctx.session.photoIndex]} ,
+            { 
+                caption: captions.captionsLashes,
+                reply_markup: getNavigationButtons(ctx.session.photoIndex, photos.length)
+            }
+        );
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения', ctx.session.messageId)
+    }
+    catch (error){
+        console.error('ОшибОЧКА: ', error)
+    }
+})
+
+// Обработчик нажатий на кнопку "Вперёд"
+bot.action('next_photo', async (ctx) => {
+    ctx.session.photoIndex = (ctx.session.photoIndex + 1) % photos.length; // Переход к следующей фотографии
+    try {
+        await ctx.editMessageMedia(
+            {
+                type: 'photo',
+                media: { source: photos[ctx.session.photoIndex] },
+                caption: captions.captionsLashes, 
+            },
+            { reply_markup: getNavigationButtons(ctx.session.photoIndex, photos.length) }
+        );
+    } catch (error) {
+        console.error('Ошибка при обновлении фотографии:', error);
+    }
+});
+
+bot.action('back_photo', async (ctx) => {
+    ctx.session.photoIndex = (ctx.session.photoIndex - 1 + photos.length) % photos.length; // Переход к предыдущей фотографии
+    try {
+        await ctx.editMessageMedia(
+            {
+                type: 'photo',
+                media: { source: photos[ctx.session.photoIndex]},
+                caption: captions.captionsLashes,
+            },
+            { reply_markup: getNavigationButtons(ctx.session.photoIndex, photos.length) }
+        );
+    } catch (error) {
+        console.error('Ошибка при обновлении фотографии:', error);
+    }
+});
+
 bot.action('test', async (ctx) => {
-    await ctx.reply('В разработке', keyboards.mainOptions);
+    await ctx.deleteMessage(ctx.session.messageId);
+    const sentMessage = await ctx.reply('В разработке', keyboards.backOptions);
+    ctx.session.messageId = sentMessage.message_id;
+    console.log('ID сообщения', ctx.session.messageId)
 })
 
 bot.action('task', async(ctx) => {
     await ctx.reply('Ты выбрал квест, но они ещё в разработке', keyboards.mainOptions)
 })
 
-// Обработчик кнопки "Назад"
 bot.action('prev_page', (ctx) => {
     const chatId = ctx.chat.id;
     if (userPages[chatId] > 0) {

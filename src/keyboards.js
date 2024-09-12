@@ -1,3 +1,39 @@
+import { callbackQuery } from "telegraf/filters";
+
+export function getNavigationButtons(index, total) {
+    if (index === 0) {
+        // Первая фотография - показываем только кнопку "Вперёд"
+        return {
+            inline_keyboard: [
+                [ { text: '➡️', callback_data: 'next_photo' }],
+                [ { text: 'Оформить заказ 🛍', url: 'https://dominilash.ru/catalog/resnitsy/chernye/4107/?oid=7412'} ],
+                [ { text: 'Назад', callback_data: 'brand'} ]
+                
+            ]
+        };
+    } else if (index === total - 1) {
+        // Последняя фотография - показываем только кнопку "Назад"
+        return {
+            inline_keyboard: [
+                [{ text: '⬅️', callback_data: 'back_photo' }],
+                [ { text: 'Оформить заказ 🛍', url: 'https://dominilash.ru/catalog/resnitsy/chernye/4107/?oid=7412'} ],
+                [ { text: 'Назад', callback_data: 'brand'} ]
+            ]
+        };
+    } else {
+        // На всех других фотографиях показываем обе кнопки
+        return {
+            inline_keyboard: [
+                [
+                    { text: '⬅️', callback_data: 'back_photo' },
+                    { text: '➡️', callback_data: 'next_photo' }
+                ],
+                [ { text: 'Оформить заказ 🛍', url: 'https://dominilash.ru/catalog/resnitsy/chernye/4107/?oid=7412'} ],
+                [ { text: 'Назад', callback_data: 'brand'} ]
+            ]
+        };
+    }
+}
 
 export const keyboards = {
     tasksOptions: {
@@ -9,6 +45,15 @@ export const keyboards = {
             resize_keyboard: true,
             one_time_keyboard: true,
         }
+    },
+    navigationOptions : {
+        inline_keyboard: [
+            [ { text: '⬅️', callback_data: 'back_photo'}, { text: '➡️', callback_data: 'next_photo'} ],
+            [ { text: 'Оформить заказ 🛍', url: 'https://dominilash.ru/catalog/resnitsy/chernye/4107/?oid=7412'} ],
+            [ { text: 'Назад', callback_data: 'brand'} ]
+        ],
+        resize_keyboard: true,
+        one_time_keyboard: true
     },
     chatOptions: {
         reply_markup: { 
@@ -25,8 +70,9 @@ export const keyboards = {
     mainOptions: {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Lash квесты' , callback_data: 'lash_quest'}, { text: 'Поддержка', callback_data: 'support'} ],
+                [ {text: 'Lash квесты' , callback_data: 'lash_quest'}, { text: 'Поддержка', callback_data: 'support'} ],
                 [ {text: 'AURA LASH CLUB', callback_data: 'chatAura'} ],
+                [ {text: 'О бренде', callback_data: 'brand'} ]
                 //[{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
             ],
             resize_keyboard: true,
@@ -35,9 +81,9 @@ export const keyboards = {
     },
     brandOptions: {
         inline_keyboard: [
-            [{text: 'Ресницы', callback_data: 'test'}, {text: 'Клей', callback_data: 'test'}, {text: 'Препараты', callback_data: 'test'}],
+            [{text: 'Ресницы', callback_data: 'lashes'}, {text: 'Клей', callback_data: 'test'}, {text: 'Препараты', callback_data: 'test'}],
             [{text: 'Перейти на сайт', url: 'https://dominilash.ru'}],
-            [{text:  'Назад', callback_data: 'Назад'}]
+            [{text:  'Назад', callback_data: 'back'}]
         ],
         resize_keyboard: true,
         one_time_keyboard: true,
@@ -63,16 +109,13 @@ export const keyboards = {
             [{ text: 'Назад', callback_data: 'back'}]
         ]
     },
-    backOptions: JSON.stringify({
-        keyboard: [
-            {
-                text: 'Назад',
-                callback_data: 'Назад'
-            }
+    backOptions: {
+        inline_keyboard: [
+            [{text:  'Назад', callback_data: 'back'}]
         ],
         resize_keyboard: true,
         one_time_keyboard: true,
-    }),
+    },
     remove_keyboard: {
         reply_markup: JSON.stringify({
             remove_keyboard: true

@@ -1,3 +1,11 @@
 {
-  "sessions": []
+  "sessions": [
+    {
+      "id": "460969518:460969518",
+      "data": {
+        "messageId": 1550,
+        "photoIndex": 0
+      }
+    }
+  ]
 }
