@@ -19,14 +19,21 @@ bot.telegram.setMyDescription(captions.description)
 
 let chatIdFromUser = null;
 let locationUserInMenu;
-const photos = [
-    path.resolve(__dirname, '../assets/img/lashes/lashes1.jpeg'),
-    path.resolve(__dirname, '../assets/img/lashes/lashes2.jpeg'),
-    path.resolve(__dirname, '../assets/img/lashes/lashes3.jpeg'),
-    path.resolve(__dirname, '../assets/img/lashes/lashes4.jpeg'),
-    path.resolve(__dirname, '../assets/img/lashes/lashes5.jpeg'),
-    path.resolve(__dirname, '../assets/img/lashes/lashes6.jpeg'),
-];
+const sections = {
+    section1: [
+        path.resolve(__dirname, '../assets/img/lashes/lashes1.jpeg'),
+        path.resolve(__dirname, '../assets/img/lashes/lashes2.jpeg'),
+        path.resolve(__dirname, '../assets/img/lashes/lashes3.jpeg'),
+        path.resolve(__dirname, '../assets/img/lashes/lashes4.jpeg'),
+        path.resolve(__dirname, '../assets/img/lashes/lashes5.jpeg'),
+        path.resolve(__dirname, '../assets/img/lashes/lashes6.jpeg'),
+    ],
+    section2: [
+        path.resolve(__dirname, '../assets/img/glues/allGlues.jpeg'),
+        path.resolve(__dirname, '../assets/img/glues/glueA.jpeg'),
+        path.resolve(__dirname, '../assets/img/glues/glueU.jpeg'),
+    ]
+};
 
 bot.telegram.setMyCommands([
     {
@@ -276,12 +283,36 @@ bot.action('lashes', async (ctx) => {
     try {
         await ctx.deleteMessage(ctx.session.messageId);
         ctx.session.photoIndex = 0;
-        console.log(keyboards.navigationOptions)
+        ctx.session.section = 'section1';
+        const section = ctx.session.section;
+        const caption = captions[section];
         const sentMessage = await ctx.replyWithPhoto(
-            { source: photos[ctx.session.photoIndex]} ,
+            { source: sections[ctx.session.section][ctx.session.photoIndex]} ,
             { 
-                caption: captions.captionsLashes,
-                reply_markup: getNavigationButtons(ctx.session.photoIndex, photos.length)
+                caption: caption,
+                reply_markup: getNavigationButtons(ctx.session.photoIndex, sections[ctx.session.section].length)
+            }
+        );
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения', ctx.session.messageId)
+    }
+    catch (error){
+        console.error('ОшибОЧКА: ', error)
+    }
+})
+
+bot.action('glue', async (ctx) => {
+    try {
+        await ctx.deleteMessage(ctx.session.messageId);
+        ctx.session.photoIndex = 0;
+        ctx.session.section = 'section2';
+        const section = ctx.session.section;
+        const caption = captions[section];
+        const sentMessage = await ctx.replyWithPhoto(
+            { source: sections[ctx.session.section][ctx.session.photoIndex]} ,
+            { 
+                caption: caption,
+                reply_markup: getNavigationButtons(ctx.session.photoIndex, sections[ctx.session.section].length)
             }
         );
         ctx.session.messageId = sentMessage.message_id;
@@ -294,15 +325,20 @@ bot.action('lashes', async (ctx) => {
 
 // Обработчик нажатий на кнопку "Вперёд"
 bot.action('next_photo', async (ctx) => {
-    ctx.session.photoIndex = (ctx.session.photoIndex + 1) % photos.length; // Переход к следующей фотографии
+    const section = ctx.session.section;
+    const photoIndex = ctx.session.photoIndex;
+    const caption = captions[section];
+    console.log('check: ', captions[section]);
+     
+    ctx.session.photoIndex = (photoIndex + 1) % sections[section].length; // Переход к следующей фотографии
     try {
         await ctx.editMessageMedia(
             {
                 type: 'photo',
-                media: { source: photos[ctx.session.photoIndex] },
-                caption: captions.captionsLashes, 
+                media: { source: sections[section][ctx.session.photoIndex] },
+                caption: caption, 
             },
-            { reply_markup: getNavigationButtons(ctx.session.photoIndex, photos.length) }
+            { reply_markup: getNavigationButtons(ctx.session.photoIndex, sections[ctx.session.section].length) }
         );
     } catch (error) {
         console.error('Ошибка при обновлении фотографии:', error);
@@ -310,15 +346,18 @@ bot.action('next_photo', async (ctx) => {
 });
 
 bot.action('back_photo', async (ctx) => {
-    ctx.session.photoIndex = (ctx.session.photoIndex - 1 + photos.length) % photos.length; // Переход к предыдущей фотографии
+    const section = ctx.session.section;
+    const photoIndex = ctx.session.photoIndex;
+    const caption = captions[section];
+    ctx.session.photoIndex = (photoIndex - 1 + sections[section].length) % sections[section].length; // Переход к предыдущей фотографии
     try {
         await ctx.editMessageMedia(
             {
                 type: 'photo',
-                media: { source: photos[ctx.session.photoIndex]},
-                caption: captions.captionsLashes,
+                media: { source: sections[section][ctx.session.photoIndex]},
+                caption: caption,
             },
-            { reply_markup: getNavigationButtons(ctx.session.photoIndex, photos.length) }
+            { reply_markup: getNavigationButtons(ctx.session.photoIndex, sections[ctx.session.section].length) }
         );
     } catch (error) {
         console.error('Ошибка при обновлении фотографии:', error);
@@ -335,14 +374,5 @@ bot.action('test', async (ctx) => {
 bot.action('task', async(ctx) => {
     await ctx.reply('Ты выбрал квест, но они ещё в разработке', keyboards.mainOptions)
 })
-
-bot.action('prev_page', (ctx) => {
-    const chatId = ctx.chat.id;
-    if (userPages[chatId] > 0) {
-        userPages[chatId] -= 1; // Переход на предыдущую страницу
-    }
-    const { text, keyboard } = getPageContent(userPages[chatId]);
-    ctx.editMessageText(text, keyboard);
-});
 
 bot.launch()
