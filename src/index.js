@@ -318,6 +318,78 @@ bot.action('next_page', (ctx) => {
     ctx.editMessageText(text, keyboard);
 });
 
+bot.action('files', async (ctx)=> {
+    try { 
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.reply('Выбери одну из кнопок ниже 👇', keyboards.filesOptions)
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
+    } 
+    catch(error){
+        console.error('Ошибка: ', error)
+    }
+})
+
+bot.action('presentation', async (ctx) => {
+    const filePath = path.resolve(__dirname, '../assets/files/presentation.pdf');
+    try { 
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.replyWithDocument({
+            source: filePath
+        },
+        {
+            caption: 'Презентация нашего бренда',
+            reply_markup: keyboards.chatOptions
+        }
+        )
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
+    } 
+    catch(error){
+        console.error('Ошибка: ', error)
+    }
+})
+
+bot.action('price', async (ctx) => {
+    const filePath = path.resolve(__dirname, '../assets/files/price.xlsx');
+    try { 
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.replyWithDocument({
+            source: filePath
+        },
+        {
+            caption: 'Прайс',
+            reply_markup: keyboards.chatOptions
+        }
+        )
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
+    } 
+    catch(error){
+        console.error('Ошибка: ', error)
+    }
+})
+
+bot.action('opt', async (ctx) => {
+    const filePath = path.resolve(__dirname, '../assets/files/opt.pdf');
+    try { 
+        await ctx.deleteMessage(ctx.session.messageId);
+        const sentMessage = await ctx.replyWithDocument({
+            source: filePath
+        },
+        {
+            caption: 'Прайс',
+            reply_markup: keyboards.chatOptions
+        }
+        )
+        ctx.session.messageId = sentMessage.message_id;
+        console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
+    } 
+    catch(error){
+        console.error('Ошибка: ', error)
+    }
+})
+
 bot.action('back', async (ctx) => {
     await ctx.deleteMessage(ctx.session.messageId);
     const sentMessage = await ctx.reply('Вы вышли в главное меню', keyboards.mainOptions)

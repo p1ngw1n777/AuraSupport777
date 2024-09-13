@@ -27,6 +27,18 @@ export const keyboards = {
             inline_keyboard: [
                 [{ text: 'Lash квесты' , callback_data: 'lash_quest'}, { text: 'Поддержка', callback_data: 'support'} ],
                 [ {text: 'AURA LASH CLUB', callback_data: 'chatAura'} ],
+                [ { text: 'Получить файлы', callback_data: 'files'} ]
+                //[{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: true,
+        }
+    },
+    filesOptions: {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: 'Презентация' , callback_data: 'presentation'}, { text: 'Прайс', callback_data: 'price'} ],
+                [ {text: 'Условия сотрудничества', callback_data: 'opt'} ],
                 //[{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
             ],
             resize_keyboard: true,
