@@ -272,24 +272,6 @@ bot.action('lash_quest',  async (ctx) => {
             })
         ctx.session.messageId = sentMessage.message_id;
         console.log('ID сообщения, которое будет удаленно: ', ctx.session.messageId);
-        // await ctx.editMessageMedia(
-        //     {
-        //         type: 'photo',
-        //         media: {
-        //             source: photoPath  // Замените на путь к вашей фотографии
-        //         },
-        //         caption: 'Уважаемые клиенты!🩵\n' +
-        //             '\n' +
-        //             'Участвуйте в Lash-квестах и получайте щедрые призы 🎁\n' +
-        //             'Узнать о квестах и получить приз можно по кнопке 👇🏻 \n' +
-        //             '\n' +
-        //             'AURA LASH | #INFO |#ВажнаяИнформация',
-        //         reply_markup: keyboards.tasksOptions.reply_markup
-        //     }, {
-        //         chat_id: ctx.chat.id,
-        //         message_id: ctx.session.messageId
-        //     }
-        // )
     }
     catch (error){
         console.error('Ошибочка: ', error)
@@ -339,7 +321,7 @@ bot.action('presentation', async (ctx) => {
         },
         {
             caption: 'Презентация нашего бренда',
-            reply_markup: keyboards.chatOptions
+            reply_markup: keyboards.backOptions
         }
         )
         ctx.session.messageId = sentMessage.message_id;
@@ -359,7 +341,7 @@ bot.action('price', async (ctx) => {
         },
         {
             caption: 'Прайс',
-            reply_markup: keyboards.chatOptions
+            reply_markup: keyboards.backOptions
         }
         )
         ctx.session.messageId = sentMessage.message_id;
@@ -379,7 +361,7 @@ bot.action('opt', async (ctx) => {
         },
         {
             caption: 'Прайс',
-            reply_markup: keyboards.chatOptions
+            reply_markup: keyboards.backOptions
         }
         )
         ctx.session.messageId = sentMessage.message_id;

@@ -27,7 +27,7 @@ export const keyboards = {
             inline_keyboard: [
                 [{ text: 'Lash квесты' , callback_data: 'lash_quest'}, { text: 'Поддержка', callback_data: 'support'} ],
                 [ {text: 'AURA LASH CLUB', callback_data: 'chatAura'} ],
-                [ { text: 'Получить файлы', callback_data: 'files'} ]
+                [ { text: 'Получить файлы', callback_data: 'files'} ],
                 //[{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
             ],
             resize_keyboard: true,
@@ -39,6 +39,7 @@ export const keyboards = {
             inline_keyboard: [
                 [{ text: 'Презентация' , callback_data: 'presentation'}, { text: 'Прайс', callback_data: 'price'} ],
                 [ {text: 'Условия сотрудничества', callback_data: 'opt'} ],
+                [ { text: 'Назад', callback_data: 'back'}]
                 //[{ text: 'О бренде' }, { text: 'Опт и представительство' } ]
             ],
             resize_keyboard: true,
@@ -75,16 +76,16 @@ export const keyboards = {
             [{ text: 'Назад', callback_data: 'back'}]
         ]
     },
-    backOptions: JSON.stringify({
-        keyboard: [
+    backOptions: {
+        inline_keyboard: [[
             {
                 text: 'Назад',
-                callback_data: 'Назад'
-            }
+                callback_data: 'files'
+            }]
         ],
         resize_keyboard: true,
         one_time_keyboard: true,
-    }),
+    },
     remove_keyboard: {
         reply_markup: JSON.stringify({
             remove_keyboard: true
