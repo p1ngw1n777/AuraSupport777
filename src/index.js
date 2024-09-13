@@ -144,25 +144,13 @@ bot.on('message', async (ctx) => {
             await ctx.reply('Ты вышел в главное меню', keyboards.mainOptions)
         }
         else {
-            // let checkUp = await checkOnItemMenu(locationUserInMenu, menuItems);
-            // console.log(checkUp)
-            // if (checkUp){
-            //     if(text === 'Назад'){
-            //         await ctx.reply('Вы вернулись в главное меню', keyboards.mainOptions);
-            //     }
-            // }
-            //await ctx.reply('Я тебя не понял.')
+           
         }
     }
     catch (error) {
         console.error(error);
     }
 });
-
-async function checkOnItemMenu (text, menuItems) {
-    console.log(text);
-    return menuItems.includes(text);
-}
 
 bot.hears('Опт и представительство', (ctx) => ctx.reply('Вы вошли в раздел Опт и представительство'));
 
@@ -174,53 +162,6 @@ async function sendMessageToGroup(chatId, message) {
     }
 }
 
-
-
-const items = [
-    'Элемент 1',
-    'Элемент 2',
-    'Элемент 3',
-    'Элемент 4',
-    'Элемент 5',
-    'Элемент 6',
-    'Элемент 7',
-    'Элемент 8',
-    'Элемент 9',
-    'Элемент 10',
-];
-
-const userPages = {};
-
-function getPageContent(page, itemsPerPage = 3) {
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-    const start = page * itemsPerPage;
-    const end = start + itemsPerPage;
-    const pageItems = items.slice(start, end).join('\n');
-
-    const prevButton = page > 0 ? Markup.button.callback('⬅️ Назад', 'prev_page') : null;
-    const nextButton = page < totalPages - 1 ? Markup.button.callback('Вперед ➡️', 'next_page') : null;
-
-    const buttons = [];
-    if (prevButton) buttons.push(prevButton);
-    if (nextButton) buttons.push(nextButton);
-
-    const keyboard = Markup.inlineKeyboard([buttons]);
-
-    return {
-        text: `Страница ${page + 1} из ${totalPages}\n\n${pageItems}`,
-        keyboard,
-    };
-}
-
-bot.action('about_quests', async (ctx) => {
-    const chatId = ctx.chat.id;
-    await ctx.reply('Вы вошли в раздел о кветах', keyboards.backOptions);
-})
-
-bot.action('current_quests', async (ctx) => {
-    const chatId = ctx.chat.id;
-    await ctx.reply('Тут чуть-чуть погодя ты сможешь увидеть актуальные квесты', keyboards.backOptions);
-})
 
 bot.action('support', async (ctx) => {
     const photoPath = path.resolve(__dirname, '../assets/img/support.jpeg');
